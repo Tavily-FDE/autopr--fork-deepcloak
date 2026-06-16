@@ -97,7 +97,7 @@ class Settings:
         o: dict[str, object] = {
             "llm.provider": _LDR_PROVIDER[self.provider],
             "search.snippets_only": False,
-            "search.tool": self.search_engine,
+            "search.tool": self.search_engine if self.search_engine in {"duckduckgo", "searxng"} else "duckduckgo",
         }
         if self.model:
             o["llm.model"] = self.model
@@ -148,6 +148,8 @@ def resolve(cli: Mapping, env: Mapping) -> Settings:
     )
 
     tavily_api_key = env.get("TAVILY_API_KEY")
+    if search_engine == "tavily" and not tavily_api_key:
+        raise ConfigError("--engine tavily requires TAVILY_API_KEY to be set.")
 
     base_url = cli.get("base_url") or env.get("LDR_LLM_OPENAI_ENDPOINT_URL")
     if provider == "openai-endpoint" and not base_url:

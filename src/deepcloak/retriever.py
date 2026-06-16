@@ -39,11 +39,12 @@ def searxng_search(base_url: str, query: str, max_results: int = 8) -> list[dict
     return out
 
 
-def tavily_search(api_key: str, query: str, max_results: int = 8) -> list[dict]:
-    """Query Tavily and return [{url, title}] hits."""
-    from tavily import TavilyClient
+def tavily_search(client: Any, query: str, max_results: int = 8) -> list[dict]:
+    """Query Tavily and return [{url, title}] hits.
 
-    client = TavilyClient(api_key=api_key)
+    ``client`` is a pre-constructed ``TavilyClient`` instance — construct it
+    once in the caller and pass via ``functools.partial``.
+    """
     response = client.search(query=query, max_results=max_results)
     out: list[dict] = []
     for item in response.get("results", []):

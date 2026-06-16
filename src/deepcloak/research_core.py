@@ -58,11 +58,14 @@ def _run_ldr(
             try:
                 from functools import partial
 
+                from tavily import TavilyClient
+
                 from .retriever import build_stealth_retriever, tavily_search
 
+                tavily_client = TavilyClient(api_key=settings.tavily_api_key)
                 fn_kwargs["retrievers"] = {
                     "stealth": build_stealth_retriever(
-                        search_fn=partial(tavily_search, settings.tavily_api_key),
+                        search_fn=partial(tavily_search, tavily_client),
                         mode=settings.stealth_mode,
                         evidence_log=evidence_log,
                         on_event=on_event,
