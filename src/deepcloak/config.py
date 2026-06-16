@@ -29,7 +29,7 @@ _KEYLESS_PROVIDERS = {"ollama", "openai-endpoint"}
 
 _VALID_STEALTH = {"auto", "always", "off"}
 _VALID_DEPTH = {"quick", "detailed", "report"}
-_VALID_ENGINE = {"duckduckgo", "searxng", "auto"}
+_VALID_ENGINE = {"duckduckgo", "searxng", "tavily", "auto"}
 
 _DEFAULT_MODEL = {
     "openai": "gpt-4.1",
@@ -63,6 +63,7 @@ class Settings:
     out: str | None
     proxy: str | None
     searxng_url: str | None
+    tavily_api_key: str | None = None
     base_url: str | None = None  # for provider "openai-endpoint" (local OpenAI-compatible)
 
     def to_ldr_env(self) -> dict[str, str]:
@@ -146,6 +147,8 @@ def resolve(cli: Mapping, env: Mapping) -> Settings:
         "LDR_SEARCH_ENGINE_WEB_SEARXNG_DEFAULT_PARAMS_INSTANCE_URL"
     )
 
+    tavily_api_key = env.get("TAVILY_API_KEY")
+
     base_url = cli.get("base_url") or env.get("LDR_LLM_OPENAI_ENDPOINT_URL")
     if provider == "openai-endpoint" and not base_url:
         raise ConfigError(
@@ -164,5 +167,6 @@ def resolve(cli: Mapping, env: Mapping) -> Settings:
         out=cli.get("out"),
         proxy=cli.get("proxy"),
         searxng_url=searxng_url,
+        tavily_api_key=tavily_api_key,
         base_url=base_url,
     )
